@@ -11,7 +11,6 @@ angular.module('randomApp', [])
       url: '/data'
     }).then(function successCallback (response) {
       $scope.paper = response.data.arr
-    // console.log($scope.paper)
     }, function errorCallback (response) {})
     $http({
       method: 'GET',
@@ -21,7 +20,7 @@ angular.module('randomApp', [])
     }, function errorCallback (response) {})
 
     var witeFile = function () {
-      $http.post('/data', {arr: $scope.paper}).success((req, res) => {
+      $http.post('/data', {arr: $scope.paper, rann: $scope.arr, bingo: $scope.bingo}).success((req, res) => {
       })
     }
 
@@ -44,7 +43,6 @@ angular.module('randomApp', [])
       $scope.bingo.push($scope.arr.splice(0, 1))
       $scope.show = $scope.bingo.map(function (obj) { return obj[0] })
       $scope.last = $scope.show[$scope.show.length - 1]
-      //  $scope.last =
       checked()
       checked()
       bingo()
@@ -56,24 +54,15 @@ angular.module('randomApp', [])
         item.data.forEach(function (item2, index2) {
           var temp = item2.indexOf($scope.last)
           if (temp !== -1) {
-            // console.log(index2 + ', ' + temp)
-            // console.log(index )
             $scope.paper[index].data[index2][temp] = null
-          // console.log(item.data)
           }
         })
       })
     }
     var bingo = function () {
       $scope.paper.forEach(function (item, index) {
-        // console.log(index)
         if (item.status) {
           item.data.forEach(function (item2, index2) {
-            // console.log(index2+','+item2)
-            //  for (var i=0;i<5;i++){
-            // $scope.paper[index].data[0].forEach((elem,i)=>{$scope.paper[index].data[0][i] = null})
-            //  $scope.paper[index].data.forEach((elem,i)=>{$scope.paper[index].data[i][0] = null})
-            //  }
             for (var i = 0;i < 5;i++) {
               var row = item.data[i].every(elem => elem === null)
               var col = item.data.every(elem => elem[0] === null)
@@ -89,10 +78,6 @@ angular.module('randomApp', [])
                 $scope.result2 = $scope.paper[index]
               }
             }
-
-            //  var col = $scope.paper[index].data.every(elem=>elem[0]===null)
-
-          //  console.log(item.data)
           })
           if (item.data[0][0] === null && item.data[1][1] === null && item.data[2][2] === null && item.data[3][3] === null && item.data[4][4] === null) {
             console.log('BingoCrossL')
@@ -138,8 +123,6 @@ angular.module('randomApp', [])
             item.status = false
             $scope.item = index
             console.log(index)
-            // console.log($scope.result)
-            // console.log($scope.result2)
             $timeout(function () {
               addClass($scope.bingo)
             }, 500)
@@ -153,5 +136,17 @@ angular.module('randomApp', [])
       arr.forEach((item) => {
         $('[id=' + item[0] + ']').addClass('bg-bingo')
       })
+    }
+    $scope.loadSave = function () {
+      $http({
+        method: 'GET',
+        url: '/out.json'
+      }).then(function successCallback (response) {
+        $scope.bingo = response.data.bingo
+        $scope.arr = response.data.rann
+        $scope.paper = response.data.arr
+        $scope.show = $scope.bingo.map(function (obj) { return obj[0] })
+        $scope.last = $scope.show[$scope.show.length - 1]
+      }, function errorCallback (response) {})
     }
   })
